@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { Role } from 'src/shared/enums/role.enum';
+import { Course } from 'src/courses/course.entity';
 
 @Entity('users')  // Table name
 export class User {
@@ -26,6 +27,8 @@ export class User {
   @Column({ type: 'text', nullable: true })
   profilePicture?: string;
 
+  @OneToMany(()=>Course,(course)=>course.teacher,{cascade:true})
+  courses:Course[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
