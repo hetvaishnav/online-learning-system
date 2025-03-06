@@ -1,13 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './course.entity';
 import { Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/couese.dto';
 import { User } from 'src/user/user.entity';
+import { UpdateCourseDto } from './dto/update-course.dto';
  
 
 @Injectable()
 export class CoursesService {
+     
     constructor(@InjectRepository(Course)
     private readonly courseRepository:Repository<Course>,
     @InjectRepository(User)
@@ -38,6 +40,51 @@ async createCourse(dto:CreateCourseDto):Promise<Course>{
     return course;
 }
 
+async getAllCourses(): Promise<Course[]> {
+    try {
+      const courses = await this.courseRepository.find({ relations: ['teacher'] });
+
+      if (!courses || courses.length === 0) {
+        throw new NotFoundException('No courses found');
+      }
+
+      return courses;
+    } catch (error) {
+      throw new InternalServerErrorException('Error fetching courses');
+    }
+  }
+
+  async updateCourse(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
+    try {
+      const course = await this.courseRepository.findOne({ where: { id } });
+
+      if (!course) {
+        throw new NotFoundException(`Course with ID ${id} not found`);
+      }
+
+      Object.assign(course, updateCourseDto);
+      await this.courseRepository.save(course);
+      
+      return course;
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating course');
+    }
+  }
+  async deleteCourse(id: string): Promise<{ message: string }> {
+    try {
+      const course = await this.courseRepository.findOne({ where: { id } });
+  
+      if (!course) {
+        throw new NotFoundException(`Course with ID ${id} not found`);
+      }
+  
+      await this.courseRepository.remove(course);
+  
+      return { message: `Course with ID ${id} deleted successfully` };
+    } catch (error) {
+      throw new InternalServerErrorException('Error deleting course');
+    }
+  }
 
 
 
