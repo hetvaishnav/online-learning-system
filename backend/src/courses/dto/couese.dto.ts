@@ -18,7 +18,7 @@ export class CreateCourseDto {
   thumbnail?: string;
 
   @IsUUID()
-  instructorId: string;
+  teacherId: string;
 
   @IsDecimal()
   @IsOptional()
