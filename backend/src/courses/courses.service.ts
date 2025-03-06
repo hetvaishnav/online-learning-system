@@ -86,6 +86,26 @@ async getAllCourses(): Promise<Course[]> {
     }
   }
 
+  async getCoursesByTeacher(teacherId: string): Promise<Course[]> {
+    try {
+      // Check if teacher exists
+      const teacher = await this.userRepository.findOne({ where: { id: teacherId } });
 
+      if (!teacher) {
+        throw new NotFoundException(`Teacher with ID ${teacherId} not found`);
+      }
 
+      // Get courses by teacher ID
+      const courses = await this.courseRepository.find({
+        where: { teacher: { id: teacherId } ,},
+        relations:['teacher']
+      });
+
+      return courses;
+    } catch (error) {
+      throw new InternalServerErrorException('Error fetching courses by teacher');
+    }
+  }
 }
+
+
