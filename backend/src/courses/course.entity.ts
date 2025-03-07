@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn, OneToMany } from 'typeorm';
 import { User } from 'src/user/user.entity';
+import { Lesson } from 'src/lessons/lesson.entity';
 
 @Entity('courses')
 export class Course {
@@ -34,6 +35,9 @@ export class Course {
   @Column({ name:'endDate',type: 'date' })
   endDate: Date;
 
+  @OneToMany(()=>Lesson,(lesson)=>lesson.course)
+  lessons:Lesson
+  
   @CreateDateColumn()
   createdAt: Date;
 
