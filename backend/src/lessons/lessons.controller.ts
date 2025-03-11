@@ -1,11 +1,14 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestException, Get, Res, Param, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { Lesson,LessonType } from './lesson.entity';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { Multer } from 'multer';
+import * as fs from 'fs';
+// Explicitly import Express Response
+import { Response } from 'express';
 @Controller('lessons')
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
@@ -32,4 +35,32 @@ export class LessonsController {
   ): Promise<Lesson> {
     return this.lessonsService.addLesson(createLessonDto, file);
   }
+
+  private readonly uploadPath = join(process.cwd(), 'uploads', 'pdf');
+  
+  @Get('download/:filename')
+  async downloadLesson(@Param('filename') filename: string, @Res() res: Response) {
+    const filePath = join(this.uploadPath, filename);
+    
+    // Check if directory exists first
+    if (!fs.existsSync(this.uploadPath)) {
+      console.log(`Upload directory does not exist: ${this.uploadPath}`);
+      throw new NotFoundException(`Upload directory not found. Please ensure the directory exists.`);
+    }
+    
+    // Then check if file exists
+    if (!fs.existsSync(filePath)) {
+      console.log(`File not found: ${filePath}`);
+      throw new NotFoundException(`File ${filename} not found.`);
+    }
+    
+    // Send file as response
+    return res.download(filePath, (err) => {
+      if (err) {
+        console.error('Error downloading file:', err);
+        throw new InternalServerErrorException('Error downloading file');
+      }
+    });
+  }
+  
 }
