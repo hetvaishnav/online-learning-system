@@ -54,4 +54,9 @@ export class LessonsService {
 
     return await this.lessonRepository.save(lesson);
   }
+
+  async getLessonsByCourse(courseId: string): Promise<Lesson[]> {
+    return this.lessonRepository.find({ where: { course: { id: courseId } } });
+  }
+  
 }

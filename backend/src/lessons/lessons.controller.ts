@@ -7,12 +7,11 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Multer } from 'multer';
 import * as fs from 'fs';
-// Explicitly import Express Response
 import { Response } from 'express';
 @Controller('lessons')
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
-
+  //add lesson
   @Post()
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
@@ -38,6 +37,25 @@ export class LessonsController {
 
   private readonly uploadPath = join(process.cwd(), 'uploads', 'pdf');
   
+
+//get all leessson
+@Get('course/:courseId')
+async getLessonsByCourse(@Param('courseId') courseId: string) {
+  try {
+    const lessons = await this.lessonsService.getLessonsByCourse(courseId);
+    if (!lessons || lessons.length === 0) {
+      throw new NotFoundException('No lessons found for this course.');
+    }
+    return { success: true, lessons };
+  } catch (error) {
+    throw new InternalServerErrorException(error.message);
+  }
+}
+
+
+
+
+  //download file
   @Get('download/:filename')
   async downloadLesson(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = join(this.uploadPath, filename);
