@@ -57,4 +57,14 @@ export class EnrollmentsService {
     const enrollment = this.enrollmentRepository.create({ student, course });
     return this.enrollmentRepository.save(enrollment);
   }
+
+
+
+  async getEnrolledCoursesByStudent(studentId: string): Promise<Course[]> {
+    const enrollments = await this.enrollmentRepository.find({
+      where: { student: { id: studentId }, isActive: true },
+      relations: ['course'], // Include course details
+    });
+    return enrollments.map(enrollment => enrollment.course); // Extract course details
+  }
 }
