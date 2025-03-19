@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, Get, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, Get, Put, Param, Delete, Query } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/couese.dto';
 import { Roles } from 'src/shared/guard/roles.decorator';
@@ -6,9 +6,10 @@ import { Role } from 'src/shared/enums/role.enum';
 import { RolesGuard } from 'src/shared/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { Course } from './course.entity';
 
 @Controller('courses')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+//@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
@@ -55,5 +56,10 @@ async deleteCourse(@Param('id') id: string) {
   } catch (error) {
     throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
   }
+}
+
+@Get('search')
+async searchCourse(@Query('title')title:string):Promise<Course[]>{
+  return this.coursesService.searchCourse(title)
 }
 }

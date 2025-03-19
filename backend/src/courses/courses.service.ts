@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './course.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/couese.dto';
 import { User } from 'src/user/user.entity';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -105,6 +105,14 @@ async getAllCourses(): Promise<Course[]> {
     } catch (error) {
       throw new InternalServerErrorException('Error fetching courses by teacher');
     }
+  }
+  
+
+  async searchCourse(title:string):Promise<Course[]>{
+    return this.courseRepository.find({
+      where:{title:ILike(`%${title}%`),isPublished:true},
+      order:{createdAt:'DESC'}
+    })
   }
 }
 
