@@ -18,7 +18,7 @@ export class UserController {
   }
 
 
-  @Roles(Role.ADMIN)
+  //@Roles(Role.ADMIN)
   @Get()
   async getAllUsers() {
     try {

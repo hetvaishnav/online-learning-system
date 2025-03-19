@@ -8,6 +8,10 @@ import { CoursesModule } from './courses/courses.module';
 import { Course } from './courses/course.entity';
 import { LessonsModule } from './lessons/lessons.module';
 import { Lesson } from './lessons/lesson.entity';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
+import { PaymentModule } from './payment/payment.module';
+import { Enrollment } from './enrollments/enrollment.entity';
+import { Payment } from './payment/payment.entity';
 
 @Module({
   imports: [
@@ -24,14 +28,16 @@ import { Lesson } from './lessons/lesson.entity';
         username: "postgres",
         password: "Oneclick1@",
         database: "learning",
-        entities: [User,Course,Lesson],
+        entities: [User,Course,Lesson,Enrollment,Payment],
         synchronize: true,
       }),
   }),
     UserModule,
     AuthModule,
     CoursesModule,
-    LessonsModule
+    LessonsModule,
+    EnrollmentsModule,
+    PaymentModule
   ],
 })
 export class AppModule {}
