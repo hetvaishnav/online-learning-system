@@ -12,6 +12,8 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { PaymentModule } from './payment/payment.module';
 import { Enrollment } from './enrollments/enrollment.entity';
 import { Payment } from './payment/payment.entity';
+import { NotificationModule } from './notification/notification.module';
+import { Notification } from './notification/notification.entity';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { Payment } from './payment/payment.entity';
         username: "postgres",
         password: "Oneclick1@",
         database: "learning",
-        entities: [User,Course,Lesson,Enrollment,Payment],
+        entities: [User,Course,Lesson,Enrollment,Payment,Notification],
         synchronize: true,
       }),
   }),
@@ -37,7 +39,8 @@ import { Payment } from './payment/payment.entity';
     CoursesModule,
     LessonsModule,
     EnrollmentsModule,
-    PaymentModule
+    PaymentModule,
+    NotificationModule
   ],
 })
 export class AppModule {}

@@ -9,7 +9,7 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './course.entity';
 
 @Controller('courses')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+//@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
