@@ -24,7 +24,7 @@ export class User {
   })
   role: Role;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ name:"profilePicture",type: 'text', nullable: true })
   profilePicture?: string;
 
   @OneToMany(()=>Course,(course)=>course.teacher,{cascade:true})

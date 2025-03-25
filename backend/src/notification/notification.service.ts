@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Course } from 'src/courses/course.entity';
 import { Enrollment } from 'src/enrollments/enrollment.entity';
 import { Notification } from './notification.entity';
+import { User } from 'src/user/user.entity';
 @Injectable()
 export class NotificationService {
     constructor(
@@ -14,6 +15,8 @@ export class NotificationService {
         private readonly courseRepository: Repository<Course>,
         @InjectRepository(Enrollment)
         private readonly enrollmentRepository: Repository<Enrollment>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
       ) {}
 
     async sendCourseUpdateNotification(dto:CreateNotificationDto):Promise<Notification[]>{
@@ -36,5 +39,20 @@ export class NotificationService {
             message
         }))
             return this.notificationRepository.save(notification)
+    }
+
+
+
+    async getNotificationForUser(studentId:string){
+        const user=await this.userRepository.findOne({where:{id:studentId}})
+        console.log(user?.fullName);
+        if(!user){
+            throw new NotFoundException(`student with ${studentId} not found`)
+        }
+        return this.notificationRepository.find({
+            where:{recipient:{id:user.id}},
+            order:{createdAt:'DESC'},
+            relations:['course']
+        })
     }
 }
