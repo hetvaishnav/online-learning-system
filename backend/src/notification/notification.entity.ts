@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { Course } from 'src/courses/course.entity';
 
@@ -8,9 +8,11 @@ export class Notification {
   id: string;
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({name:"recipient_id"})
   recipient: User;  
 
   @ManyToOne(() => Course, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({name:"course_id"})
   course: Course; 
 
   @Column({ type: 'text' })

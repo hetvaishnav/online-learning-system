@@ -25,9 +25,9 @@ export class NotificationService {
         if(!course){
             throw new NotFoundException("course not found")
         }
-        console.log("wkjjqhjq"+course.title);
+         
         const entrollments=await this.enrollmentRepository.find({where:{course:{id:course.id} }})
-        console.log("entroll student"+entrollments);
+        
         if(entrollments.length==0){
             throw new NotFoundException("No student found in this course")
 
@@ -42,7 +42,7 @@ export class NotificationService {
     }
 
 
-
+  
     async getNotificationForUser(studentId:string){
         const user=await this.userRepository.findOne({where:{id:studentId}})
         console.log(user?.fullName);
@@ -50,9 +50,10 @@ export class NotificationService {
             throw new NotFoundException(`student with ${studentId} not found`)
         }
         return this.notificationRepository.find({
-            where:{recipient:{id:user.id}},
-            order:{createdAt:'DESC'},
+            where:{recipient:{id:user.id}}, 
+            order:{createdAt:'DESC'},   
             relations:['course']
         })
     }
+
 }
