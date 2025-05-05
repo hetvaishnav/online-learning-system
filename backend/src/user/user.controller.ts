@@ -7,11 +7,11 @@ import { Role } from 'src/shared/enums/role.enum';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+//@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('profile')
+  @Get('profile') 
   @UseGuards(AuthGuard('jwt'))  
   getProfile(@Req() req) {
     return req.user;  

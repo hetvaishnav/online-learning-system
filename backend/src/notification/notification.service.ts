@@ -40,8 +40,6 @@ export class NotificationService {
         }))
             return this.notificationRepository.save(notification)
     }
-
-
   
     async getNotificationForUser(studentId:string){
         const user=await this.userRepository.findOne({where:{id:studentId}})
@@ -55,5 +53,4 @@ export class NotificationService {
             relations:['course']
         })
     }
-
 }
