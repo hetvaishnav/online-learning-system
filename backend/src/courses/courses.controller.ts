@@ -39,6 +39,14 @@ export class CoursesController {
       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  @Get(':courseId')
+  async getCoursesById(@Param('courseId') courseId: string) {
+    try {
+      return await this.coursesService.getCoursesById(courseId);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @Put(':id')
   async updateCourse(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

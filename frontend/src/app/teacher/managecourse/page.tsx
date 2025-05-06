@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getTeacherCources, deleteCourse } from '../../../../service/teacherservice';
 import { Course } from '../../../../type/admin.type';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Page() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -27,16 +28,14 @@ export default function Page() {
       try {
         await deleteCourse(courseId);
         alert('Course deleted');
-        fetchCourses(); 
+        fetchCourses();
       } catch (error) {
         console.error('Delete failed', error);
       }
     }
   };
 
-  const handleUpdate = (courseId: string) => {
-    router.push(`/teacher/updatecourse/${courseId}`); 
-  };
+ 
 
   return (
     <div>
@@ -47,12 +46,9 @@ export default function Page() {
             <h3 className="font-bold text-lg">{course.title}</h3>
             <p>{course.description}</p>
             <div className="space-x-2">
-              <button
-                onClick={() => handleUpdate(course.id)}
-                className="bg-blue-500 text-white px-3 py-1 rounded"
-              >
-                Update
-              </button>
+              <Link href={`/teacher/updatecourse/${course.id}`}>
+                <button className="bg-blue-500 text-white px-3 py-1 rounded">Update</button>
+              </Link>
               <button
                 onClick={() => handleDelete(course.id)}
                 className="bg-red-500 text-white px-3 py-1 rounded"

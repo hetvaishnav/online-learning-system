@@ -10,7 +10,16 @@ export const getTeacherCources=async(teacherid:string)=>{
     }
 
 }
+export const getCoursebyId=async(teacherid:string)=>{
+    try {
+        let url=`http://localhost:3001/courses/${teacherid}`
+        const response=await axios.get(url)
+        return response
+    } catch (error) {
+        console.log(error);
+    }
 
+}
 export const addCourse=async(payload:any)=>{
     try {
         let url=`http://localhost:3001/courses`
@@ -37,6 +46,17 @@ export const deleteCourse=async(courseId:string)=>{
     try {
         let url=`http://localhost:3001/courses/${courseId}`
         const response=axios.delete(url)
+        return response
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const updateCource=async(courseId:string,payload:any)=>{
+    try {
+        let url=`http://localhost:3001/courses/${courseId}`
+        const response=axios.put(url,payload)
         return response
     } catch (error) {
         console.log(error);
