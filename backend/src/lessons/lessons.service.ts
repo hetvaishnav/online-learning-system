@@ -5,7 +5,7 @@ import { Lesson,LessonType } from './lesson.entity';
 import { Course } from 'src/courses/course.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { Multer } from 'multer';
-
+import { Express } from 'express';
 
 @Injectable()
 export class LessonsService {
@@ -16,7 +16,7 @@ export class LessonsService {
     private courseRepository: Repository<Course>,
   ) {}
 
-  async addLesson(createLessonDto: CreateLessonDto, file?: Multer.File): Promise<Lesson> {
+  async addLesson(createLessonDto: CreateLessonDto, file?: Express.Multer.File): Promise<Lesson> {
     const { title, description, lessonOrder, courseId, contentType, contentUrl } = createLessonDto;
 
     // Check if course exists

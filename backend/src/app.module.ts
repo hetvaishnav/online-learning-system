@@ -14,6 +14,7 @@ import { Enrollment } from './enrollments/enrollment.entity';
 import { Payment } from './payment/payment.entity';
 import { NotificationModule } from './notification/notification.module';
 import { Notification } from './notification/notification.entity';
+import { CourseVideo } from './courses/course.video.entity';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { Notification } from './notification/notification.entity';
         username: "postgres",
         password: "Oneclick1@",
         database: "learning",
-        entities: [User,Course,Lesson,Enrollment,Payment,Notification],
+        entities: [User,Course,Lesson,Enrollment,Payment,Notification,CourseVideo],
         synchronize: true,
       }),
   }),

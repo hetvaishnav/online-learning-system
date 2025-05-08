@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, Get, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpException, HttpStatus, Get, Put, Param, Delete, Query, UseInterceptors, UploadedFile, Res, Req } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/couese.dto';
 import { Roles } from 'src/shared/guard/roles.decorator';
@@ -7,11 +7,17 @@ import { RolesGuard } from 'src/shared/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './course.entity';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateVideoDto } from './dto/upload.vedio.dto';
+import { Express } from 'express';
+import { join } from 'path';
+import * as fs from 'fs';
+import { Request, Response } from 'express';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 @Controller('courses')
 //@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(private readonly coursesService: CoursesService) { }
 
   @Post()
   @Roles(Role.TEACHER)
@@ -58,16 +64,84 @@ export class CoursesController {
   }
 
   @Delete(':id')
-async deleteCourse(@Param('id') id: string) {
-  try {
-    return await this.coursesService.deleteCourse(id);
-  } catch (error) {
-    throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+  async deleteCourse(@Param('id') id: string) {
+    try {
+      return await this.coursesService.deleteCourse(id);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
-}
 
-@Get('search')
-async searchCourse(@Query('title')title:string):Promise<Course[]>{
-  return this.coursesService.searchCourse(title)
-}
+  @Get('search')
+  async searchCourse(@Query('title') title: string): Promise<Course[]> {
+    return this.coursesService.searchCourse(title)
+  }
+
+  // course.controller.ts
+  @Post('upload-video')
+  @UseInterceptors(FileInterceptor('file', {
+    dest: './uploads/videos', // local folder
+  }))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload video to a course',
+    schema: {
+      type: 'object',
+      properties: {
+        courseId: {
+          type: 'string',
+          format: 'uuid',
+        },
+        title: {
+          type: 'string',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+      required: ['courseId', 'title', 'file'],
+    },
+  })
+  async uploadVideo(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: CreateVideoDto,
+  ) {
+    const videoUrl = `uploads/videos/${file.filename}`;
+    return this.coursesService.addVideoToCourse(body.courseId, body.title, videoUrl);
+  }
+
+  @Get('stream/:filename')
+  streamVideo(@Param('filename') filename: string, @Res() res: Response, @Req() req: Request) {
+    const videoPath = join(__dirname, '..', '..', 'uploads','videos', filename);
+    console.log({videoPath});
+    const stat = fs.statSync(videoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunkSize = (end - start) + 1;
+      const file = fs.createReadStream(videoPath, { start, end });
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunkSize,
+        'Content-Type': 'video/mp4',
+      };
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+      };
+      res.writeHead(200, head);
+      fs.createReadStream(videoPath).pipe(res);
+    }
+  }
+
+
 }

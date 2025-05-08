@@ -5,6 +5,7 @@ import { ILike, Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/couese.dto';
 import { User } from 'src/user/user.entity';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { CourseVideo } from './course.video.entity';
  
 
 @Injectable()
@@ -13,7 +14,9 @@ export class CoursesService {
     constructor(@InjectRepository(Course)
     private readonly courseRepository:Repository<Course>,
     @InjectRepository(User)
-    private readonly userRepository:Repository<User>
+    private readonly userRepository:Repository<User>,
+    @InjectRepository(CourseVideo)
+    private readonly videoRepo:Repository<CourseVideo>
 ){}
 async createCourse(dto:CreateCourseDto):Promise<Course>{
     const { title, description, category, thumbnail, teacherId, price, startDate, endDate } = dto;
@@ -130,6 +133,14 @@ async getAllCourses(): Promise<Course[]> {
       order:{createdAt:'DESC'}
     })
   }
+  async addVideoToCourse(courseId: string, title: string, videoUrl: string) {
+    const course = await this.courseRepository.findOne({ where: { id: courseId } });
+    if (!course) throw new NotFoundException('Course not found');
+  
+    const video = this.videoRepo.create({ course, title, videoUrl });
+    return this.videoRepo.save(video);
+  }
+  
 }
 
 

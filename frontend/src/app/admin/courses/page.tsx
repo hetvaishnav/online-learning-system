@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getAllcource } from "../../../../service/adminservice";// Adjust path
+import { getAllcource } from "../../../../service/adminservice";
 import { Course } from "../../../../type/admin.type";
 
 export default function Page() {
@@ -14,7 +14,6 @@ export default function Page() {
   const fetchCourses = async () => {
     try {
       const response = await getAllcource();
-      console.log("response", response);
       if (response && response.data) {
         setCourses(response.data);
       }
@@ -46,6 +45,15 @@ export default function Page() {
       ) : (
         <p className="text-center text-gray-500">No courses found.</p>
       )}
+      {/* <video src="http://localhost:3001/courses/stream/fa4bc910c5cd27a643a0cf6846e7f632">react vedio</video> */}
+      <video
+        controls
+        width="100%"
+        className="rounded shadow"
+      >
+        <source src="http://localhost:3001/courses/stream/fa4bc910c5cd27a643a0cf6846e7f632" type="video/mp4" />
+       React vido
+      </video>
     </div>
   );
 }

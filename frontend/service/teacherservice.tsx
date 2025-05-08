@@ -62,3 +62,12 @@ export const updateCource=async(courseId:string,payload:any)=>{
         console.log(error);
     }
 }
+
+
+export const addLesson=async()=>{
+    try {
+        let url=`http://localhost:3001.`
+    } catch (error) {
+        
+    }
+}
