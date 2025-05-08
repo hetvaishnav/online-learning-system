@@ -67,4 +67,12 @@ export class EnrollmentsService {
     });
     return enrollments.map(enrollment => enrollment.course); // Extract course details
   }
+  
+  async getEnrolledStudents(courseId: string): Promise<any[]> {
+    const enrollments = await this.enrollmentRepository.find({
+      where: { course: { id: courseId }, isActive: true },
+      relations: ['student'], // Include student details
+    });
+    return enrollments.map(enrollment => enrollment.student); // Extract student details
+  }
 }

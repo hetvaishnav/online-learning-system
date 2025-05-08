@@ -11,11 +11,19 @@ export class EnrollmentsController {
     return this.enrollmentsService.enrollStudent(createEnrollmentDto);
   }
 
-  @Get(':studentId')
+  @Get('student/:studentId')
   async getEnrolledCourses(@Param('studentId') studentId: string) {
     const enrollments = await this.enrollmentsService.getEnrolledCoursesByStudent(studentId);
     if (!enrollments.length) {
       throw new NotFoundException(`No enrollments found for student ID: ${studentId}`);
+    }
+    return enrollments;
+  }
+  @Get('course/:courseId')
+  async getEnrolledStudents(@Param('courseId') courseId: string) {
+    const enrollments = await this.enrollmentsService.getEnrolledStudents(courseId);
+    if (!enrollments.length) {
+      throw new NotFoundException(`No enrollments found for courseId : ${courseId}`);
     }
     return enrollments;
   }

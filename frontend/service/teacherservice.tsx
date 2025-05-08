@@ -84,3 +84,14 @@ export const addvideo=async(payload:any)=>{
         
     }
 }
+
+export const getEnrollStudent=async(courseId:string)=>{
+    try {
+        let url=`http://localhost:3001/enrollments/course/${courseId}`
+        const response=await axios.get(url)
+        return response
+    } catch (error) {
+        console.log(error);
+    }
+
+}

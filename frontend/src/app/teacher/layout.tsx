@@ -10,7 +10,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
         <nav className="flex flex-col space-y-2">
           <Link href="/teacher/addcourse" className="hover:text-gray-300">Add Course</Link>
           <Link href="/teacher/managecourse" className="hover:text-gray-300">Manage Courses</Link>
-           
+          <Link href="/" className="hover:text-gray-300">Logout</Link>
         </nav>
       </aside>
 

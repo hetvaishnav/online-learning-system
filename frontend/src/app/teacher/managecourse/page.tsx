@@ -1,10 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { getTeacherCources, deleteCourse, addLesson, addvideo } from '../../../../service/teacherservice';
+import { getTeacherCources, deleteCourse, addLesson, addvideo, getEnrollStudent } from '../../../../service/teacherservice';
 import { Course } from '../../../../type/admin.type';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function Page() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -16,6 +17,8 @@ export default function Page() {
   const [lessonOrder, setLessonOrder] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [contentUrl, setContentUrl] = useState('');
+  const [enrolledStudents, setEnrolledStudents] = useState<any[]>([]);
+  const [showEnrolledModal, setShowEnrolledModal] = useState(false);
 
   const router = useRouter();
   const teacherId = '576ebd30-9101-4b50-8018-277ff57e5df3';
@@ -50,59 +53,68 @@ export default function Page() {
     setShowForm(true);
   };
 
+  const handleGetEnrolledStudents = async (courseId: string) => {
+    try {
+      const res = await getEnrollStudent(courseId);
+      if (res?.data) {
+        setEnrolledStudents(res.data);
+        setShowEnrolledModal(true);
+      }else{
+        console.log("object");
+        toast('No enroll student in rhis course')
+      }
+    } catch (error) {
+      alert('Failed to fetch enrolled students');
+      console.error(error);
+    }
+  };
+
   const handleLessonSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       if (lessonType === 'video') {
-        // Create FormData for video upload
         if (!selectedCourseId) {
           alert("Please select a course.");
           return;
         }
-        
+
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('courseId', selectedCourseId); // Now guaranteed to be a string
+        formData.append('courseId', selectedCourseId);
         if (file) {
           formData.append('file', file);
         }
-  
-        const res = await addvideo(formData);
-        console.log("vedio",{res});
-        if(res){
 
+        const res = await addvideo(formData);
+        console.log("video", { res });
+        if (res) {
           alert('Video uploaded successfully');
         }
       } else {
-        // Handle text/pdf with payload
         const payload = {
           title,
           description,
           lessonOrder,
           contentType: lessonType,
-          contentUrl: lessonType === 'pdf' ? '' : contentUrl, // For text, contentUrl is text; for pdf, you can later assign from file upload result
+          contentUrl: lessonType === 'pdf' ? '' : contentUrl,
           courseId: selectedCourseId,
         };
-  
+
         if (lessonType === 'pdf' && file) {
           const formData = new FormData();
           formData.append('file', file);
-  
-          // You should have an upload API for PDF files, this is a placeholder:
           const uploadRes = await axios.post('http://localhost:3001/lessons', formData);
           payload.contentUrl = uploadRes.data.fileUrl;
         }
-  
-        const res=await addLesson(payload);
-        console.log("lesson",{res});
-        if(res){
-          
+
+        const res = await addLesson(payload);
+        console.log("lesson", { res });
+        if (res) {
           alert('Lesson added successfully');
         }
       }
-  
-      // Reset form
+
       setShowForm(false);
       setTitle('');
       setDescription('');
@@ -115,7 +127,7 @@ export default function Page() {
       alert('Failed to add lesson/video');
     }
   };
-  
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">My Courses</h2>
@@ -140,6 +152,12 @@ export default function Page() {
               >
                 Add Lesson
               </button>
+              <button
+                onClick={() => handleGetEnrolledStudents(course.id)}
+                className="bg-purple-600 text-white px-3 py-1 rounded"
+              >
+                Get Enrolled Students
+              </button>
             </div>
           </div>
         ))}
@@ -153,7 +171,6 @@ export default function Page() {
           >
             <h2 className="text-lg font-bold">Add Lesson</h2>
 
-            {/* Title shown for all types */}
             <input
               type="text"
               placeholder="Title"
@@ -163,7 +180,6 @@ export default function Page() {
               required
             />
 
-            {/* Dropdown to choose lesson type */}
             <select
               value={lessonType}
               onChange={(e) => setLessonType(e.target.value)}
@@ -176,7 +192,6 @@ export default function Page() {
               <option value="video">Video</option>
             </select>
 
-            {/* For TEXT only */}
             {lessonType === 'text' && (
               <>
                 <textarea
@@ -205,7 +220,6 @@ export default function Page() {
               </>
             )}
 
-            {/* For PDF */}
             {lessonType === 'pdf' && (
               <>
                 <textarea
@@ -233,7 +247,6 @@ export default function Page() {
               </>
             )}
 
-            {/* For VIDEO - only title and file */}
             {lessonType === 'video' && (
               <input
                 type="file"
@@ -260,6 +273,33 @@ export default function Page() {
         </div>
       )}
 
+      {showEnrolledModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow max-w-md w-full">
+            <h2 className="text-lg font-bold mb-4">Enrolled Students</h2>
+            {enrolledStudents.length > 0 ? (
+              <ul className="space-y-2 max-h-60 overflow-y-auto">
+                {enrolledStudents.map((student, index) => (
+                  <li key={index} className="border p-2 rounded">
+                    <p><strong>Name:</strong> {student.name}</p>
+                    <p><strong>Email:</strong> {student.email}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : 
+              <p>No students enrolled.</p>
+            }
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => setShowEnrolledModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
