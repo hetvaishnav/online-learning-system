@@ -64,9 +64,22 @@ export const updateCource=async(courseId:string,payload:any)=>{
 }
 
 
-export const addLesson=async()=>{
+export const addLesson=async(payload:any)=>{
     try {
-        let url=`http://localhost:3001.`
+        let url=`http://localhost:3001/lessons`
+        const response=axios.post(url,payload)
+        return response
+    } catch (error) {
+        
+    }
+}
+
+
+export const addvideo=async(payload:any)=>{
+    try {
+        let url=`http://localhost:3001/courses/upload-video`
+        const response=axios.post(url,payload)
+        return response
     } catch (error) {
         
     }

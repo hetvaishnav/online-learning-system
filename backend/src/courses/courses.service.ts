@@ -133,12 +133,28 @@ async getAllCourses(): Promise<Course[]> {
       order:{createdAt:'DESC'}
     })
   }
+
   async addVideoToCourse(courseId: string, title: string, videoUrl: string) {
     const course = await this.courseRepository.findOne({ where: { id: courseId } });
     if (!course) throw new NotFoundException('Course not found');
   
     const video = this.videoRepo.create({ course, title, videoUrl });
     return this.videoRepo.save(video);
+  }
+
+  async getCoursevideobyId(courseId:string){
+    const courseviduo=await this.videoRepo.find({where:{course:{id:courseId}}})
+    if(!courseviduo){
+      throw new NotFoundException()
+    }
+    return courseviduo
+  }
+  async getCoursevideobyvId(id:string){
+    const courseviduo=await this.videoRepo.findOne({where:{id:id}})
+    if(!courseviduo){
+      throw new NotFoundException()
+    }
+    return courseviduo
   }
   
 }

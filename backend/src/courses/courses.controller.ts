@@ -114,7 +114,6 @@ export class CoursesController {
   @Get('stream/:filename')
   streamVideo(@Param('filename') filename: string, @Res() res: Response, @Req() req: Request) {
     const videoPath = join(__dirname, '..', '..', 'uploads','videos', filename);
-    console.log({videoPath});
     const stat = fs.statSync(videoPath);
     const fileSize = stat.size;
     const range = req.headers.range;
@@ -143,5 +142,22 @@ export class CoursesController {
     }
   }
 
+  @Get('course-video/:courseId')
+  getCoursevideobyId(@Param('courseId') courseId:string){
+    try {
+        return this.coursesService.getCoursevideobyId(courseId)
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  @Get('course-video/:id')
+  getCoursevideobyvId(@Param('id') id:string){
+    try {
+        return this.coursesService.getCoursevideobyvId(id)
+    } catch (error) {
+        console.log(error);
+    }
+  }
 
 }
