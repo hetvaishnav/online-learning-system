@@ -95,3 +95,14 @@ export const getEnrollStudent=async(courseId:string)=>{
     }
 
 }
+
+export const getAddedLesson=async(courseId:string)=>{
+    try {
+        let url=`http://localhost:3001/lessons/course/${courseId}`
+        const response=await axios.get(url)
+        return response
+    } catch (error) {
+        console.log(error);
+    }
+
+}

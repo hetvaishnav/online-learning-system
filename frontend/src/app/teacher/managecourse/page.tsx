@@ -104,8 +104,8 @@ export default function Page() {
         if (lessonType === 'pdf' && file) {
           const formData = new FormData();
           formData.append('file', file);
-          const uploadRes = await axios.post('http://localhost:3001/lessons', formData);
-          payload.contentUrl = uploadRes.data.fileUrl;
+          const uploadRes = await addLesson(formData);
+          payload.contentUrl = uploadRes?.data.fileUrl;
         }
 
         const res = await addLesson(payload);
