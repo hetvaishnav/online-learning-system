@@ -3,6 +3,10 @@ export type Course= {
     title: string;
     description: string;
     price: number;
+    teacher:{
+      fullName:string,
+      email:string
+    }
   }
   
   export type User= {
