@@ -11,3 +11,12 @@ export type Course= {
     email: string;
     role: string;
   }
+
+  export type Lesson={
+    id:string,
+    title:string,
+    description:string,
+    lessonOrder:number,
+    contentType:string,
+    contentUrl:string
+  }

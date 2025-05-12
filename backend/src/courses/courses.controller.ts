@@ -26,9 +26,12 @@ export class CoursesController {
   }
   @Roles(Role.ADMIN)
   @Get('allcourses')
-  async getAllCourses() {
+  async getAllCourses(
+    @Query('limit') limit: number=10,
+    @Query('offset') offset: number=0
+  ) {
     try {
-      const courses = await this.coursesService.getAllCourses();
+      const courses = await this.coursesService.getAllCourses(+limit, +offset);
       if (!courses.length) {
         throw new HttpException('No courses found', HttpStatus.NOT_FOUND);
       }
@@ -113,7 +116,7 @@ export class CoursesController {
 
   @Get('stream/:filename')
   streamVideo(@Param('filename') filename: string, @Res() res: Response, @Req() req: Request) {
-    const videoPath = join(__dirname, '..', '..', 'uploads','videos', filename);
+    const videoPath = join(__dirname, '..', '..', 'uploads', 'videos', filename);
     const stat = fs.statSync(videoPath);
     const fileSize = stat.size;
     const range = req.headers.range;
@@ -143,20 +146,20 @@ export class CoursesController {
   }
 
   @Get('course-video/:courseId')
-  getCoursevideobyId(@Param('courseId') courseId:string){
+  getCoursevideobyId(@Param('courseId') courseId: string) {
     try {
-        return this.coursesService.getCoursevideobyId(courseId)
+      return this.coursesService.getCoursevideobyId(courseId)
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   }
 
   @Get('course-video/:id')
-  getCoursevideobyvId(@Param('id') id:string){
+  getCoursevideobyvId(@Param('id') id: string) {
     try {
-        return this.coursesService.getCoursevideobyvId(id)
+      return this.coursesService.getCoursevideobyvId(id)
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   }
 

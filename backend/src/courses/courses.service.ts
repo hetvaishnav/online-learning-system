@@ -43,19 +43,24 @@ async createCourse(dto:CreateCourseDto):Promise<Course>{
     return course;
 }
 
-async getAllCourses(): Promise<Course[]> {
-    try {
-      const courses = await this.courseRepository.find({ relations: ['teacher'] });
+async getAllCourses(limit :number, offset:number): Promise<Course[]> {
+  try {
+    const courses = await this.courseRepository.find({
+      relations: ['teacher'],
+      take: limit,
+      skip: offset,
+    });
 
-      if (!courses || courses.length === 0) {
-        throw new NotFoundException('No courses found');
-      }
-
-      return courses;
-    } catch (error) {
-      throw new InternalServerErrorException('Error fetching courses');
+    if (!courses || courses.length === 0) {
+      throw new NotFoundException('No courses found');
     }
+
+    return courses;
+  } catch (error) {
+    throw new InternalServerErrorException('Error fetching courses');
   }
+}
+
 
   async updateCourse(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
     try {
