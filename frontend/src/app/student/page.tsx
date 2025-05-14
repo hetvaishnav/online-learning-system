@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllCourses, searchCourse } from '../../../service/studentservice';
 import { Course } from '../../../type/admin.type';
+import { useRouter } from 'next/navigation';
 
 const LIMIT = 15;
 
@@ -11,7 +12,7 @@ export default function StudentDashboard() {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const router = useRouter();
     useEffect(() => {
         if (searchTerm.trim() === '') {
             fetchCourses();
@@ -109,9 +110,15 @@ export default function StudentDashboard() {
                                     <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
                                         ₹{course.price}
                                     </span>
-                                    <button className="text-blue-600 hover:underline text-sm font-medium">
-                                        View Details
-                                    </button>
+                                    
+
+<button
+    onClick={() => router.push(`/student/${course.id}`)}
+    className="text-blue-600 hover:underline text-sm font-medium"
+>
+    View Details
+</button>
+
                                 </div>
                             </div>
                         ))}

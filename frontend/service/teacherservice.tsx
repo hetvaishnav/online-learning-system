@@ -31,17 +31,6 @@ export const addCourse=async(payload:any)=>{
 }
 
 
-// export const getEnrollStudent=async(studentId:string)=>{
-//     try {
-//         let url=`http://localhost:3001/enrollments/${studentId}`
-//         const respose=axios.get(url)
-//         return respose
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
-
 export const deleteCourse=async(courseId:string)=>{
     try {
         let url=`http://localhost:3001/courses/${courseId}`
