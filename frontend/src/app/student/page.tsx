@@ -110,14 +110,14 @@ export default function StudentDashboard() {
                                     <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
                                         ₹{course.price}
                                     </span>
-                                    
 
-<button
-    onClick={() => router.push(`/student/${course.id}`)}
-    className="text-blue-600 hover:underline text-sm font-medium"
->
-    View Details
-</button>
+
+                                    <button
+                                        onClick={() => router.push(`/student/${course.id}`)}
+                                        className="text-blue-600 hover:underline text-sm font-medium"
+                                    >
+                                        View Details
+                                    </button>
 
                                 </div>
                             </div>

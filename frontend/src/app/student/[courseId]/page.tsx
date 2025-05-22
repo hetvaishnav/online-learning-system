@@ -6,19 +6,15 @@ import { Course } from '../../../../type/admin.type';
 
 export default function CourseDetailPage() {
     const params = useParams();
-    console.log({params});
-    const courseId = Array.isArray(params.courseId) ? params.courseId[0] : params.courseId;
-
-    console.log({courseId});
+    const courseId = params.courseId;
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!courseId) return;
-        const fetchCourse = async (courseId:string) => {
+        const fetchCourse = async (courseId: string) => {
             try {
                 const res = await getCourseById(courseId);
-                console.log({res});
                 setCourse(res?.data || null);
             } catch (error) {
                 console.error('Error loading course:', error);
@@ -26,7 +22,7 @@ export default function CourseDetailPage() {
                 setLoading(false);
             }
         };
-        fetchCourse(courseId);
+        fetchCourse(courseId as string);
     }, [courseId]);
 
     if (loading) return <p className="p-6">Loading...</p>;

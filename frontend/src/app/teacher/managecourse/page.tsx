@@ -4,7 +4,6 @@ import { getTeacherCources, deleteCourse, addLesson, addvideo, getEnrollStudent 
 import { Course } from '../../../../type/admin.type';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export default function Page() {
@@ -275,7 +274,7 @@ export default function Page() {
 
       {showEnrolledModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow max-w-md w-full">
+          <div className="bg-white p-6 rounded shadow max-w-md w-full">showEnrolledModal
             <h2 className="text-lg font-bold mb-4">Enrolled Students</h2>
             {enrolledStudents.length > 0 ? (
               <ul className="space-y-2 max-h-60 overflow-y-auto">
