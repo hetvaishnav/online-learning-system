@@ -58,5 +58,7 @@ export class LessonsService {
   async getLessonsByCourse(courseId: string): Promise<Lesson[]> {
     return this.lessonRepository.find({ where: { course: { id: courseId } } });
   }
-  
+   async  name() {
+    console.log("dd");
+  }
 }
