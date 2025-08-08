@@ -61,4 +61,7 @@ export class LessonsService {
    async  name() {
     console.log("dd");
   }
+  async  name1() {
+    console.log("dd");
+  }
 }
