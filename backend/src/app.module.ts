@@ -15,6 +15,10 @@ import { Payment } from './payment/payment.entity';
 import { NotificationModule } from './notification/notification.module';
 import { Notification } from './notification/notification.entity';
 import { CourseVideo } from './courses/course.video.entity';
+import { ChatModule } from './chat/chat.module';
+import { Chat } from './chat/chat.entity';
+import { JwtService } from '@nestjs/jwt';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
   imports: [
@@ -31,7 +35,7 @@ import { CourseVideo } from './courses/course.video.entity';
         username: "postgres",
         password: "Oneclick1@",
         database: "learning",
-        entities: [User,Course,Lesson,Enrollment,Payment,Notification,CourseVideo],
+        entities: [User,Course,Lesson,Enrollment,Payment,Notification,CourseVideo,Chat],
         synchronize: true,
       }),
   }),
@@ -41,7 +45,10 @@ import { CourseVideo } from './courses/course.video.entity';
     LessonsModule,
     EnrollmentsModule,
     PaymentModule,
-    NotificationModule
+    NotificationModule,
+    ChatModule
   ],
+    providers: [], 
+
 })
 export class AppModule {}

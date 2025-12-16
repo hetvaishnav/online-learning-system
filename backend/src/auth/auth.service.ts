@@ -60,9 +60,9 @@ export class AuthService {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     
     const payload = { id: user.id, email: user.email, role: user.role };
-    //console.log("payload"+payload.email);
+    console.log("payload: " + JSON.stringify(payload));
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload, { expiresIn: 3600 }),
       user,
     };
   }

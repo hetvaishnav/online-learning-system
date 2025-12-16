@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 import { Role } from 'src/shared/enums/role.enum';
 import { Course } from 'src/courses/course.entity';
+import { Chat } from '../chat/chat.entity';
 
 @Entity('users')  // Table name
 export class User {
@@ -29,6 +30,9 @@ export class User {
 
   @OneToMany(()=>Course,(course)=>course.teacher,{cascade:true})
   courses:Course[];
+
+  @OneToMany(() => Chat, chat => chat.sender)
+  chats: Chat[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
