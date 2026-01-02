@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestExcept
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
-import { Lesson,LessonType } from './lesson.entity';
+import { Lesson, LessonType } from './lesson.entity';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Multer } from 'multer';
@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import { Response } from 'express';
 @Controller('lessons')
 export class LessonsController {
-  constructor(private readonly lessonsService: LessonsService) {}
+  constructor(private readonly lessonsService: LessonsService) { }
   //add lesson
   @Post()
   @UseInterceptors(
@@ -42,21 +42,21 @@ export class LessonsController {
   }
 
   private readonly uploadPath = join(process.cwd(), 'uploads', 'pdf');
-  
 
-//get all leessson
-@Get('course/:courseId')
-async getLessonsByCourse(@Param('courseId') courseId: string) {
-  try {
-    const lessons = await this.lessonsService.getLessonsByCourse(courseId);
-    if (!lessons || lessons.length === 0) {
-      throw new NotFoundException('No lessons found for this course.');
+
+  //get all leessson
+  @Get('course/:courseId')
+  async getLessonsByCourse(@Param('courseId') courseId: string) {
+    try {
+      const lessons = await this.lessonsService.getLessonsByCourse(courseId);
+      if (!lessons || lessons.length === 0) {
+        throw new NotFoundException('No lessons found for this course.');
+      }
+      return { success: true, lessons };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-    return { success: true, lessons };
-  } catch (error) {
-    throw new InternalServerErrorException(error.message);
   }
-}
 
 
 
@@ -65,19 +65,18 @@ async getLessonsByCourse(@Param('courseId') courseId: string) {
   @Get('download/:filename')
   async downloadLesson(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = join(this.uploadPath, filename);
-    
+
     // Check if directory exists first
     if (!fs.existsSync(this.uploadPath)) {
-      console.log(`Upload directory does not exist: ${this.uploadPath}`);
       throw new NotFoundException(`Upload directory not found. Please ensure the directory exists.`);
     }
-    
+
     // Then check if file exists
     if (!fs.existsSync(filePath)) {
       console.log(`File not found: ${filePath}`);
       throw new NotFoundException(`File ${filename} not found.`);
     }
-    
+
     // Send file as response
     return res.download(filePath, (err) => {
       if (err) {
@@ -86,5 +85,5 @@ async getLessonsByCourse(@Param('courseId') courseId: string) {
       }
     });
   }
-  
+
 }

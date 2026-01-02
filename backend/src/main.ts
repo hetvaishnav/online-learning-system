@@ -11,15 +11,13 @@ async function bootstrap() {
     .setTitle('API Documentation')
     .setDescription('The API description for the application')
     .setVersion('1.0')
-    .addBearerAuth() 
+    .addBearerAuth()
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.useWebSocketAdapter(new IoAdapter(app));
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 3001;
   await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
-  console.log(`WebSocket Gateway initialized.`); // This will be logged if the app starts successfully
 }
 bootstrap();

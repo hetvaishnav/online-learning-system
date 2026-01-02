@@ -58,7 +58,7 @@ export default function Page() {
       if (res?.data) {
         setEnrolledStudents(res.data);
         setShowEnrolledModal(true);
-      }else{
+      } else {
         console.log("object");
         toast('No enroll student in rhis course')
       }
@@ -86,7 +86,6 @@ export default function Page() {
         }
 
         const res = await addvideo(formData);
-        console.log("video", { res });
         if (res) {
           alert('Video uploaded successfully');
         }
@@ -108,7 +107,6 @@ export default function Page() {
         }
 
         const res = await addLesson(payload);
-        console.log("lesson", { res });
         if (res) {
           alert('Lesson added successfully');
         }
@@ -285,7 +283,7 @@ export default function Page() {
                   </li>
                 ))}
               </ul>
-            ) : 
+            ) :
               <p>No students enrolled.</p>
             }
             <div className="mt-4 text-right">

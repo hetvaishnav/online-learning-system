@@ -21,7 +21,7 @@ export class EnrollmentsService {
 
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
-  ) {}
+  ) { }
 
   async enrollStudent(dto: CreateEnrollmentDto) {
     const { studentId, courseId } = dto;
@@ -34,7 +34,6 @@ export class EnrollmentsService {
 
     // Check if the course exists
     const course = await this.courseRepository.findOne({ where: { id: courseId } });
-    console.log("course"+course?.id);
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found.`);
     }
@@ -47,7 +46,7 @@ export class EnrollmentsService {
 
     // If the course is paid, check if the student has completed the payment
     if (course.price > 0) {
-      const payment = await this.paymentRepository.findOne({ where: { student:{id:student.id} , course:{id:course.id}, status: PaymentStatus.SUCCESS } });
+      const payment = await this.paymentRepository.findOne({ where: { student: { id: student.id }, course: { id: course.id }, status: PaymentStatus.SUCCESS } });
       if (!payment) {
         throw new BadRequestException(`Payment required to enroll in this course.`);
       }
@@ -67,7 +66,7 @@ export class EnrollmentsService {
     });
     return enrollments.map(enrollment => enrollment.course); // Extract course details
   }
-  
+
   async getEnrolledStudents(courseId: string): Promise<any[]> {
     const enrollments = await this.enrollmentRepository.find({
       where: { course: { id: courseId }, isActive: true },

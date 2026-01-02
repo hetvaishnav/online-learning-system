@@ -10,25 +10,23 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto'; // <-- IMPORT your DTO
-import { Logger } from '@nestjs/common';
-import * as jwt from 'jsonwebtoken'; // Assuming you use this from your example
-import { ConfigService } from '@nestjs/config';
+import { CreateChatDto } from './dto/create-chat.dto';
+import { ChatEventEnum } from '../shared/enums/chat-events.enum';
 
-// Define a type for our user payload to avoid using 'any'
 interface AuthenticatedUserPayload {
-  id: string; // or 'sub' depending on your JWT payload
+  id: string;
   email: string;
   role: string;
-  // add any other fields from your JWT payload
 }
 
-// Define a type for a socket that has the user attached
 interface AuthenticatedSocket extends Socket {
   user: AuthenticatedUserPayload;
 }
 
+@Injectable()
 @WebSocketGateway({
   namespace: '/chat',
   cors: { origin: '*', methods: ['GET', 'POST'] }
@@ -37,69 +35,116 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @WebSocketServer()
   server: Server;
 
- 
-
-  // Inject ChatService and ConfigService
   constructor(
     private readonly chatService: ChatService,
-    private readonly configService: ConfigService,
-  ) {}
+    private readonly jwtService: JwtService,
+  ) { }
 
-  // 1. AUTHENTICATION MIDDLEWARE (This is the correct way)
-  // This runs for every new client trying to connect.
   afterInit(server: Server) {
-    console.log('****** WebSocket server initialized ******');
-    // Middleware should not be in afterInit for connection-time auth
+    // Authentication middleware - runs before handleConnection
+    server.use((socket: Socket, next) => {
+      try {
+        let token =
+          socket.handshake.auth?.token ||
+          socket.handshake.query?.token ||
+          socket.handshake.headers?.authorization?.split(' ')[1];
+
+        // Strip "Bearer " prefix if present
+        if (token && typeof token === 'string' && token.startsWith('Bearer ')) {
+          token = token.slice(7).trim();
+        }
+
+        if (!token) {
+          return next(new Error('Authentication error: Token missing'));
+        }
+
+        const payload = this.jwtService.verify(token) as AuthenticatedUserPayload;
+        (socket as any).user = payload;
+        next();
+      } catch (err) {
+        return next(new Error('Authentication error: Invalid token'));
+      }
+    });
   }
 
-  handleConnection(client: Socket) {
-    console.log(`****** Client connected: ${client.id} ******`);
+  handleConnection(client: AuthenticatedSocket) {
+    console.log(`****** Client connected: ${client.id} (User: ${client.user?.id}) ******`);
   }
 
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: AuthenticatedSocket) {
     console.log(`****** Client disconnected: ${client.id} ******`);
   }
 
-  @SubscribeMessage('joinCourseChat')
+  @SubscribeMessage(ChatEventEnum.JOIN_COURSE_CHAT)
   handleJoinCourseChat(
-    @MessageBody('courseId') courseId: string,
-    @ConnectedSocket() client: Socket,
+    @MessageBody('courseId') courseId: string, // Keeping legacy name for now, but treating as Room ID or handling conversion?
+    // User plan said: "Join the chatRoomId". So frontend will send chatRoomId.
+    // Let's rename the arg to 'roomId' but keep event name or add a new event.
+    // To cleanly refactor, let's use a new event or overload.
+    // Given the constraints, I will assume frontend sends { courseId: chatRoomId } for this event, or I should rename the event in types.
+    // Let's stick to the event enum `JOIN_COURSE_CHAT` but we will treat the payload as the ID to join.
+    @MessageBody('chatRoomId') chatRoomId: string,
+    @ConnectedSocket() client: AuthenticatedSocket,
   ): void {
-    if (!courseId) {
-      client.emit('error', new WsException('courseId is required.'));
+    const roomId = chatRoomId;
+    if (!roomId) {
+      client.emit(ChatEventEnum.ERROR, { message: 'chatRoomId is required' });
       return;
     }
-    console.log(`Client ${client.id} joining room for course: ${courseId}`);
-    client.join(courseId);
-    client.emit('joinedCourseChat', `Successfully joined chat for course: ${courseId}`);
+
+    client.join(roomId);
+    client.emit(ChatEventEnum.JOINED_COURSE_CHAT, {
+      courseId: roomId, // Echo back
+      message: `Successfully joined chat room: ${roomId}`
+    });
   }
 
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage(ChatEventEnum.SEND_MESSAGE)
   async handleSendMessage(
     @MessageBody() createChatDto: CreateChatDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: AuthenticatedSocket,
   ): Promise<void> {
     try {
-      console.log(`Message in course ${createChatDto.courseId}`);
+      if (!client.user) {
+        throw new WsException('Unauthorized');
+      }
+
+      createChatDto.senderId = client.user.id;
       const message = await this.chatService.createMessage(createChatDto);
-      this.server.to(createChatDto.courseId).emit('receiveMessage', message);
+      if (message.chatRoom) {
+        this.server.to(message.chatRoom.id).emit(ChatEventEnum.RECEIVE_MESSAGE, message);
+      }
     } catch (error) {
-        console.error(`Failed to send message: ${error.message}`, error.stack);
-        client.emit('error', new WsException(error.message || 'Could not send message'));
+      console.error(`Failed to send message: ${error.message}`, error.stack);
+      client.emit(ChatEventEnum.ERROR, {
+        message: error.message || 'Could not send message'
+      });
     }
   }
 
-  @SubscribeMessage('leaveCourseChat')
+  @SubscribeMessage(ChatEventEnum.LEAVE_COURSE_CHAT)
   handleLeaveCourseChat(
-    @MessageBody('courseId') courseId: string,
-    @ConnectedSocket() client: Socket,
+    @MessageBody('chatRoomId') chatRoomId: string,
+    @ConnectedSocket() client: AuthenticatedSocket,
   ): void {
-    if (!courseId) {
-      client.emit('error', new WsException('courseId is required.'));
+    if (!chatRoomId) {
+      client.emit(ChatEventEnum.ERROR, { message: 'chatRoomId is required' });
       return;
     }
-    console.log(`Client ${client.id} left course chat: ${courseId}`);
-    client.leave(courseId);
-    client.emit('leftCourseChat', `Left chat for course: ${courseId}`);
+
+    client.leave(chatRoomId);
+    client.emit(ChatEventEnum.LEFT_COURSE_CHAT, {
+      courseId: chatRoomId,
+      message: `Left chat room: ${chatRoomId}`
+    });
+  }
+
+  // Helper methods for emitting events
+  emitMessageToRoom(courseId: string, event: string, data: any) {
+    this.server.to(courseId).emit(event, data);
+  }
+
+  emitToAll(event: string, data: any) {
+    this.server.emit(event, data);
   }
 }

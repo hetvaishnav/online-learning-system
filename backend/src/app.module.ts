@@ -17,6 +17,7 @@ import { Notification } from './notification/notification.entity';
 import { CourseVideo } from './courses/course.video.entity';
 import { ChatModule } from './chat/chat.module';
 import { Chat } from './chat/chat.entity';
+import { ChatRoom } from './chat/chat-room.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ChatGateway } from './chat/chat.gateway';
 
@@ -35,10 +36,10 @@ import { ChatGateway } from './chat/chat.gateway';
         username: "postgres",
         password: "Oneclick1@",
         database: "learning",
-        entities: [User,Course,Lesson,Enrollment,Payment,Notification,CourseVideo,Chat],
+        entities: [User, Course, Lesson, Enrollment, Payment, Notification, CourseVideo, Chat, ChatRoom],
         synchronize: true,
       }),
-  }),
+    }),
     UserModule,
     AuthModule,
     CoursesModule,
@@ -48,7 +49,7 @@ import { ChatGateway } from './chat/chat.gateway';
     NotificationModule,
     ChatModule
   ],
-    providers: [], 
+  providers: [],
 
 })
-export class AppModule {}
+export class AppModule { }

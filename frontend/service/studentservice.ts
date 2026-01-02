@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const getAllCourses=async(limit:number,offset:number)=>{
+export const getAllCourses = async (limit: number, offset: number) => {
     try {
-        let url=`http://localhost:3001/courses/allcourses?limit=${limit}&offset=${offset}`
-        const response=await axios.get(url)
+        let url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/courses/allcourses?limit=${limit}&offset=${offset}`
+        const response = await axios.get(url)
         return response
     } catch (error) {
         console.log(error);
@@ -11,10 +11,10 @@ export const getAllCourses=async(limit:number,offset:number)=>{
 
 }
 
-export const searchCourse=async(title:string)=>{
+export const searchCourse = async (title: string) => {
     try {
-        let url=`http://localhost:3001/courses/search?title=${title}`
-        const response=await axios.get(url)
+        let url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/courses/search?title=${title}`
+        const response = await axios.get(url)
         return response
     } catch (error) {
         console.log(error);
@@ -22,21 +22,21 @@ export const searchCourse=async(title:string)=>{
 
 }
 
-export const getEnrollStudent=async(studentId:string)=>{
+export const getEnrollStudent = async (studentId: string) => {
     try {
-        let url=`http://localhost:3001/enrollments/${studentId}`
-        const respose=axios.get(url)
+        let url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/enrollments/${studentId}`
+        const respose = axios.get(url)
         return respose
     } catch (error) {
         console.log(error);
     }
-   }
+}
 
 
-export const getCourseById=async(courseId:string)=>{
+export const getCourseById = async (courseId: string) => {
     try {
-        let url=`http://localhost:3001/courses/${courseId}`
-        const response=await axios.get(url)
+        let url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/courses/${courseId}`
+        const response = await axios.get(url)
         return response
     } catch (error) {
         console.log(error);

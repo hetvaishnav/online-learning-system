@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, Up
 import { User } from 'src/user/user.entity';
 import { Lesson } from 'src/lessons/lesson.entity';
 import { CourseVideo } from './course.video.entity';
-import { Chat } from '../chat/chat.entity';
+import { ChatRoom } from '../chat/chat-room.entity';
 
 @Entity('courses')
 export class Course {
@@ -44,8 +44,8 @@ export class Course {
   @OneToMany(() => Lesson, (lesson) => lesson.course)
   lessons: Lesson[]
 
-  @OneToMany(() => Chat, chat => chat.course)
-  chats: Chat[];
+  @OneToMany(() => ChatRoom, chatRoom => chatRoom.course, { cascade: true })
+  chatRooms: ChatRoom[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateChatDto {
   @IsNotEmpty()
@@ -8,6 +8,10 @@ export class CreateChatDto {
   @IsNotEmpty()
   @IsUUID()
   courseId: string;
+
+  @IsUUID()
+  @IsOptional()
+  chatRoomId?: string;
 
   @IsNotEmpty()
   @IsUUID()

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getCourseById } from '../../../../service/studentservice';
 import { useParams } from 'next/navigation';
 import { Course } from '../../../../type/admin.type';
+import { ChatWindow } from '../../../components/chat/ChatWindow';
 
 export default function CourseDetailPage() {
     const params = useParams();
@@ -33,9 +34,14 @@ export default function CourseDetailPage() {
             <h1 className="text-2xl font-bold mb-4">{course.title}</h1>
             <p className="text-gray-600 mb-2">By: {course.teacher?.fullName || 'Unknown'}</p>
             <p className="mb-4 text-gray-700">{course.description}</p>
-            <p className="bg-green-100 text-green-800 inline-block px-4 py-2 rounded-full font-semibold">
+            <p className="bg-green-100 text-green-800 inline-block px-4 py-2 rounded-full font-semibold mb-6">
                 ₹{course.price}
             </p>
+
+            <div className="mt-8 border-t pt-6">
+                <h2 className="text-xl font-semibold mb-4">Course Chat</h2>
+                <ChatWindow courseId={courseId as string} />
+            </div>
         </div>
     );
 }

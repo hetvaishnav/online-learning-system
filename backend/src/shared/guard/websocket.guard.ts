@@ -18,7 +18,7 @@ export class WsJwtGuard implements CanActivate {
 
       const token = queryToken || authToken || headerToken;
       if (!token) throw new UnauthorizedException('Token missing');
-  
+
       try {
         const payload = this.jwtService.verify(token, {
           secret: process.env.JWT_SECRET || 'supersecretkey',
@@ -31,14 +31,6 @@ export class WsJwtGuard implements CanActivate {
         }
         throw new UnauthorizedException('Invalid token');
       }
-
-      // const payload = this.jwtService.verify(token, {
-      //   secret: process.env.JWT_SECRET || 'supersecretkey',
-      // });
-      // console.log("asasasasasasssaas");
-      // (client as any).user = payload;
-      // console.log("sasas",client);
-      // return true;
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
     }
