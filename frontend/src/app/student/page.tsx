@@ -70,81 +70,105 @@ export default function StudentDashboard() {
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Student Dashboard - Courses</h1>
-
-            {/* Search Input */}
-            <div className="mb-6">
-                <input
-                    type="text"
-                    placeholder="Search by course title..."
-                    value={searchTerm}
-                    onChange={handleInputChange}
-                    className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
+        <div className="min-h-screen bg-transparent text-gray-800 font-sans">
+            {/* Hero Section with Gradient Background */}
+            <div className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-500 pb-32 pt-12 px-6 shadow-xl">
+                <div className="max-w-7xl mx-auto text-center">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+                        Discover Your Next Passion
+                    </h1>
+                    <p className="text-blue-50 text-lg md:text-xl max-w-2xl mx-auto">
+                        Explore our curated courses and take your skills to the next level.
+                    </p>
+                </div>
             </div>
 
-            {loading ? (
-                <p>Loading...</p>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {courses.map(course => (
-                            <div
-                                key={course.id}
-                                className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100"
-                            >
-                                <div className="flex items-center mb-3 space-x-3">
-                                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-lg font-bold">
-                                        {course.title.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h2 className="font-semibold text-lg text-gray-800">{course.title}</h2>
-                                        <p className="text-sm text-gray-500">{course.teacher?.fullName || 'Unknown Teacher'}</p>
-                                    </div>
-                                </div>
+            {/* Main Content Container (Overlapping Hero) */}
+            <div className="max-w-7xl mx-auto px-6 -mt-24 relative z-10 pb-12">
 
-                                <p className="text-sm text-gray-700 mb-3 line-clamp-3">{course.description}</p>
-
-                                <div className="flex justify-between items-center">
-                                    <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                                        ₹{course.price}
-                                    </span>
-
-
-                                    <button
-                                        onClick={() => router.push(`/student/${course.id}`)}
-                                        className="text-blue-600 hover:underline text-sm font-medium"
-                                    >
-                                        View Details
-                                    </button>
-
-                                </div>
-                            </div>
-                        ))}
+                {/* Floating Search Bar */}
+                <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl mb-12 max-w-3xl mx-auto border border-blue-50/50">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="What do you want to learn today?"
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                            className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border-none rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-lg text-gray-700 placeholder-gray-400 transition-all shadow-inner"
+                        />
+                        <svg className="w-6 h-6 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
+                </div>
 
-                    {/* Pagination Controls */}
-                    {!searchTerm && (
-                        <div className="flex justify-center mt-6 space-x-4">
-                            <button
-                                onClick={handlePrev}
-                                disabled={offset === 0}
-                                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                            >
-                                Previous
-                            </button>
-                            <button
-                                onClick={handleNext}
-                                disabled={!hasMore}
-                                className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-                            >
-                                Next
-                            </button>
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {courses.map(course => (
+                                <div
+                                    key={course.id}
+                                    onClick={() => router.push(`/student/${course.id}`)}
+                                    className="group bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 transform"
+                                >
+                                    {/* Card Header Gradient */}
+                                    <div className="h-32 bg-gradient-to-r from-sky-400 to-blue-500 relative flex items-center justify-center">
+                                        <span className="text-6xl text-white/30 font-bold select-none">
+                                            {course.title.charAt(0)}
+                                        </span>
+                                        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-semibold">
+                                            {course.teacher?.fullName || 'Instructor'}
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6">
+                                        <h2 className="font-bold text-xl text-gray-800 mb-2 truncate group-hover:text-blue-600 transition-colors">
+                                            {course.title}
+                                        </h2>
+                                        <p className="text-sm text-gray-500 mb-4 line-clamp-2 h-10 leading-relaxed">
+                                            {course.description}
+                                        </p>
+
+                                        <div className="flex justify-between items-center mt-4">
+                                            <span className="bg-emerald-50 text-emerald-700 text-sm font-bold px-4 py-1.5 rounded-full border border-emerald-100">
+                                                ₹{course.price}
+                                            </span>
+                                            <span className="text-blue-500 text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
+                                                View Course
+                                                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    )}
-                </>
-            )}
+
+                        {/* Pagination Controls */}
+                        {!searchTerm && (
+                            <div className="flex justify-center mt-16 space-x-6">
+                                <button
+                                    onClick={handlePrev}
+                                    disabled={offset === 0}
+                                    className="px-6 py-3 bg-white border border-gray-200 text-gray-600 rounded-full shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={handleNext}
+                                    disabled={!hasMore}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 hover:shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+                                >
+                                    Next Page
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }

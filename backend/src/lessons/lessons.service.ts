@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Lesson,LessonType } from './lesson.entity';
+import { Lesson, LessonType } from './lesson.entity';
 import { Course } from 'src/courses/course.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { Multer } from 'multer';
 import { Express } from 'express';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class LessonsService {
@@ -14,7 +16,8 @@ export class LessonsService {
     private lessonRepository: Repository<Lesson>,
     @InjectRepository(Course)
     private courseRepository: Repository<Course>,
-  ) {}
+    @InjectQueue('lesson-notifications') private notificationsQueue: Queue,
+  ) { }
 
   async addLesson(createLessonDto: CreateLessonDto, file?: Express.Multer.File): Promise<Lesson> {
     const { title, description, lessonOrder, courseId, contentType, contentUrl } = createLessonDto;
@@ -32,7 +35,7 @@ export class LessonsService {
     }
 
     let storedContentUrl = contentUrl;
-    
+
     if (contentType === LessonType.PDF) {
       if (!file) {
         throw new BadRequestException('PDF file is required for this lesson.');
@@ -52,16 +55,24 @@ export class LessonsService {
       contentUrl: storedContentUrl,
     });
 
-    return await this.lessonRepository.save(lesson);
+    const savedLesson = await this.lessonRepository.save(lesson);
+
+    // Add notification job to queue with 1 minute delay
+    await this.notificationsQueue.add(
+      'notify-students',
+      {
+        courseId: course.id,
+        lessonTitle: lesson.title,
+      },
+      {
+        delay: 60000,
+      },
+    );
+
+    return savedLesson;
   }
 
   async getLessonsByCourse(courseId: string): Promise<Lesson[]> {
     return this.lessonRepository.find({ where: { course: { id: courseId } } });
-  }
-   async  name() {
-    console.log("dd");
-  }
-  async  name1() {
-    console.log("dd");
   }
 }

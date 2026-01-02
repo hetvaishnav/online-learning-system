@@ -77,12 +77,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage(ChatEventEnum.JOIN_COURSE_CHAT)
   handleJoinCourseChat(
-    @MessageBody('courseId') courseId: string, // Keeping legacy name for now, but treating as Room ID or handling conversion?
-    // User plan said: "Join the chatRoomId". So frontend will send chatRoomId.
-    // Let's rename the arg to 'roomId' but keep event name or add a new event.
-    // To cleanly refactor, let's use a new event or overload.
-    // Given the constraints, I will assume frontend sends { courseId: chatRoomId } for this event, or I should rename the event in types.
-    // Let's stick to the event enum `JOIN_COURSE_CHAT` but we will treat the payload as the ID to join.
+    @MessageBody('courseId') courseId: string,
     @MessageBody('chatRoomId') chatRoomId: string,
     @ConnectedSocket() client: AuthenticatedSocket,
   ): void {
@@ -94,7 +89,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     client.join(roomId);
     client.emit(ChatEventEnum.JOINED_COURSE_CHAT, {
-      courseId: roomId, // Echo back
+      courseId: roomId,
       message: `Successfully joined chat room: ${roomId}`
     });
   }

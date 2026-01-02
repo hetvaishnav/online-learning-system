@@ -18,8 +18,7 @@ import { CourseVideo } from './courses/course.video.entity';
 import { ChatModule } from './chat/chat.module';
 import { Chat } from './chat/chat.entity';
 import { ChatRoom } from './chat/chat-room.entity';
-import { JwtService } from '@nestjs/jwt';
-import { ChatGateway } from './chat/chat.gateway';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -47,7 +46,13 @@ import { ChatGateway } from './chat/chat.gateway';
     EnrollmentsModule,
     PaymentModule,
     NotificationModule,
-    ChatModule
+    ChatModule,
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
   ],
   providers: [],
 

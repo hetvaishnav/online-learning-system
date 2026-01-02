@@ -8,8 +8,9 @@ import { User } from 'src/user/user.entity';
 import { Payment } from 'src/payment/payment.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Enrollment,Payment,User,Course])],
+  imports: [TypeOrmModule.forFeature([Enrollment, Payment, User, Course])],
   controllers: [EnrollmentsController],
-  providers: [EnrollmentsService]
+  providers: [EnrollmentsService],
+  exports: [EnrollmentsService]
 })
-export class EnrollmentsModule {}
+export class EnrollmentsModule { }
